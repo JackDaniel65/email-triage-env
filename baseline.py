@@ -41,7 +41,7 @@ def run_agent_on_task(task_id: int) -> dict:
 
         try:
             response = client.chat.completions.create(
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_msg},
@@ -75,7 +75,7 @@ def run_agent_on_task(task_id: int) -> dict:
 
 def main():
     print("EmailTriageEnv - Baseline Inference Script")
-    print("Agent: llama3-8b-8192 (OpenAI-compatible API)\n")
+    print("Agent: llama-3.3-70b-versatile (OpenAI-compatible API)\n")
 
     results = []
     for task_id in [1, 2, 3]:
