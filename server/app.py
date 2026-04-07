@@ -1,7 +1,3 @@
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -11,7 +7,6 @@ from env.environment import EmailTriageEnv
 from utils.models import Action
 
 app = FastAPI()
-
 sessions = {}
 
 BASELINE_RESULTS = {
@@ -44,8 +39,7 @@ def root():
 def health():
     return {"name": "EmailTriageEnv", "version": "1.0.0", "status": "running"}
 
-@app.post("/reset")
-@app.get("/reset")
+@app.api_route("/reset", methods=["GET", "POST"])
 def reset(task_id: int = 1):
     env = EmailTriageEnv(task_id=task_id, shuffle=False)
     sessions[task_id] = env
@@ -88,13 +82,7 @@ def tasks():
 def grader(task_id: int = 1):
     env = get_env(task_id)
     s = env.state()
-    return {
-        "task_id": task_id,
-        "avg_reward": s["avg_reward"],
-        "total_reward": s["total_reward"],
-        "episode_rewards": s["episode_rewards"],
-        "done": s["done"],
-    }
+    return {"task_id": task_id, "avg_reward": s["avg_reward"], "total_reward": s["total_reward"], "episode_rewards": s["episode_rewards"], "done": s["done"]}
 
 @app.get("/baseline")
 def baseline():

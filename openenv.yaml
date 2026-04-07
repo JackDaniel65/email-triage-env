@@ -1,0 +1,10 @@
+name: email-triage-env
+version: "1.0.0"
+description: A real-world OpenEnv environment for AI email triage agents
+sdk: docker
+inference_file: inference.py
+tags:
+  - openenv
+  - email
+  - triage
+  - nlp
