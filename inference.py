@@ -11,7 +11,7 @@ MODEL_NAME = os.getenv("MODEL_NAME", "llama-3.3-70b-versatile")
 API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
 
 BENCHMARK = "email-triage-env"
-MAX_STEPS = 10
+MAX_STEPS = 20
 
 
 def log_start(task: str, env: str, model: str):

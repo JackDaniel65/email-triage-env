@@ -9,38 +9,42 @@ tags:
   - openenv
 ---
 
-# EmailTriageEnv
+# 📧 EmailTriageEnv
 
-A real-world OpenEnv environment where an AI agent learns to triage customer emails — classifying spam, assigning priorities, and drafting professional replies.
+> A production-grade OpenEnv environment where AI agents learn to triage customer emails.
 
----
+## Baseline Scores
 
-## Motivation
+| Task | Difficulty | Score |
+|------|-----------|-------|
+| Spam Detection | Easy | 0.950 |
+| Priority + Category | Medium | 0.905 |
+| Reply Drafting | Hard | 0.677 |
+| **Overall** | | **0.844** |
 
-Email triage is one of the most common real-world tasks handled by AI assistants today. This environment lets an agent practice the full spectrum — from simple spam detection to nuanced reply drafting — with graded feedback at every step.
+## Tasks
 
----
+**Task 1 — Spam Detection (Easy)**
+Classify each email as spam or not_spam. Binary reward signal.
 
-## Environment Description
+**Task 2 — Priority + Category (Medium)**
+Assign priority (urgent/normal/low) and category (billing/support/feedback/other). Partial credit scoring.
 
-The agent is presented with a stream of emails one at a time. Depending on the active task, it must:
-
-- **Task 1 (Easy):** Classify each email as `spam` or `not_spam`
-- **Task 2 (Medium):** Assign a `priority` (urgent/normal/low) and `category` (billing/support/feedback/other)
-- **Task 3 (Hard):** Draft a short, professional reply to the email
-
----
+**Task 3 — Reply Drafting (Hard)**
+Draft a professional reply. Scored on keywords, tone, professionalism, and length.
 
 ## Action Space
+
 ```python
 class Action(BaseModel):
-    label: Optional[str]      # "spam" or "not_spam" — Task 1
-    priority: Optional[str]   # "urgent", "normal", "low" — Task 2
-    category: Optional[str]   # "billing", "support", "feedback", "other" — Task 2
-    reply: Optional[str]      # reply text — Task 3
+    label: Optional[str]      # spam | not_spam
+    priority: Optional[str]   # urgent | normal | low
+    category: Optional[str]   # billing | support | feedback | other
+    reply: Optional[str]      # reply text
 ```
 
 ## Observation Space
+
 ```python
 class Observation(BaseModel):
     email_id: str
@@ -51,42 +55,25 @@ class Observation(BaseModel):
     step_number: int
 ```
 
----
+## Setup
 
-## Reward Function
-
-| Task | Reward Logic |
-|------|-------------|
-| Task 1 | 1.0 for correct label, 0.0 for wrong |
-| Task 2 | 0.5 for correct priority + 0.5 for correct category |
-| Task 3 | Partial credit based on keyword match, tone, and length |
-
----
-
-## Setup & Usage
 ```bash
 pip install -r requirements.txt
 python main.py
+
+export API_BASE_URL=https://api.groq.com/openai/v1
+export MODEL_NAME=llama-3.3-70b-versatile
+export HF_TOKEN=your_groq_key
+python inference.py
 ```
 
-### Baseline agent (requires Groq API key)
-```bash
-export GROQ_API_KEY=your_key_here
-python baseline.py
-```
+## API Endpoints
 
-### Docker
-```bash
-docker build -t email-triage-env .
-docker run email-triage-env
-```
-
----
-
-## Baseline Scores
-
-| Task | Difficulty | Score |
-|------|-----------|-------|
-| 1 | Easy | ~0.85 |
-| 2 | Medium | ~0.65 |
-| 3 | Hard | ~0.45 |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET/POST | `/reset` | Reset environment |
+| POST | `/step` | Submit action |
+| GET | `/state` | Current state |
+| GET | `/tasks` | List tasks |
+| GET | `/grader` | Episode scores |
+| GET | `/baseline` | Baseline scores |
